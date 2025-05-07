@@ -31,17 +31,29 @@ def create_record(cls, request_body):
     db.session.add(new_model)
     db.session.commit()
     print(new_model.title)
-    return {cls.__name__.lower(): new_model.to_dict()}, 201
+    # return {cls.__name__.lower(): new_model.to_dict()}, 201
+    return {"task": new_model.to_dict()}, 201
     # return new_model.to_dict(), 201
 
 
 def get_models_with_filters(cls, filters=None):
     query = db.select(cls)
+    sort = None
 
     if filters:
         for attribute, value in filters.items():
+            if attribute == "sort":
+                sort = value
+                continue  
             if hasattr(cls, attribute):
                 query = query.where(getattr(cls, attribute).ilike(f"%{value}%"))
+    
+    if sort == "asc":
+        query = query.order_by(cls.title.asc())
+    elif sort == "desc":
+        query = query.order_by(cls.title.desc())
+    else:
+        query = query.order_by(cls.id) 
 
-    models = db.session.scalars(query.order_by(cls.id))
+    models = db.session.scalars(query)
     return [model.to_dict() for model in models]
