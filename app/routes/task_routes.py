@@ -1,8 +1,13 @@
 from datetime import datetime
+import os
+import requests
+# from dotenv import load_dotenv
 from flask import Blueprint, Response, request
 from app.models.task import Task
 from app.routes.route_utilities import  validate_model, get_models_with_filters, create_record
 from ..db import db
+
+# load_dotenv()
 
 
 bp = Blueprint("bp", __name__, url_prefix="/tasks")
@@ -52,8 +57,19 @@ def delete_task(task_id):
 @bp.patch("/<task_id>/mark_complete")
 def mark_task_complete(task_id):
     task = validate_model(Task, task_id)
+    
+    path = "https://slack.com/api/chat.postMessage"
+    API_KEY = os.environ.get("API_KEY")
+
+    headers = {"Authorization": f"Bearer {API_KEY}"}
+    body ={
+        "channel": "task-notifications",
+        "text": f"Someone just completed the task {task.title}"
+    }
+
     if not task.completed_at:
         task.completed_at = datetime.now()
+        slack_post = requests.post(path, headers=headers, json=body )
     
     db.session.commit()
     return Response(status=204, mimetype="application/json")
