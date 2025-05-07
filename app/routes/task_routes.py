@@ -1,3 +1,4 @@
+from datetime import datetime
 from flask import Blueprint, Response, request
 from app.models.task import Task
 from app.routes.route_utilities import  validate_model, get_models_with_filters, create_record
@@ -46,3 +47,24 @@ def delete_task(task_id):
     db.session.commit()
 
     return Response(status=204, mimetype="application/json")
+
+
+@bp.patch("/<task_id>/mark_complete")
+def mark_task_complete(task_id):
+    task = validate_model(Task, task_id)
+    if not task.completed_at:
+        task.completed_at = datetime.now()
+    
+    db.session.commit()
+    return Response(status=204, mimetype="application/json")
+
+
+@bp.patch("/<task_id>/mark_incomplete")
+def mark_task_incomplete(task_id):
+    task = validate_model(Task, task_id)
+    if task.completed_at:
+        task.completed_at = None
+    
+    db.session.commit()
+    return Response(status=204, mimetype="application/json")
+
