@@ -1,24 +1,20 @@
 from datetime import datetime
 import os
-import requests
-# from dotenv import load_dotenv
+import requests # HTTP library to make a request to Slack API
 from flask import Blueprint, Response, request
 from app.models.task import Task
-from app.routes.route_utilities import  validate_model, get_models_with_filters, create_record
+from app.routes.route_utilities import  validate_model, get_models_with_filters, create_model
 from ..db import db
-
-# load_dotenv()
 
 
 bp = Blueprint("bp", __name__, url_prefix="/tasks")
 
 
-# POST one
 @bp.post("")
 def create_task():
     request_body = request.get_json()
 
-    return create_record(Task, request_body)
+    return create_model(Task, request_body)
 
 
 @bp.get("")

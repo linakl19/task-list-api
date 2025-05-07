@@ -1,6 +1,4 @@
-from datetime import datetime
 from flask import abort, make_response
-from app.models.task import Task
 from ..db import db
 
 def validate_model(cls, model_id):
@@ -20,9 +18,9 @@ def validate_model(cls, model_id):
     return model
 
 
-def create_record(cls, request_body):
+def create_model(cls, model_data):
     try:
-        new_model = cls.from_dict(request_body)
+        new_model = cls.from_dict(model_data)
 
     except KeyError as error:
         response = {"details": "Invalid data"}
@@ -31,8 +29,8 @@ def create_record(cls, request_body):
     db.session.add(new_model)
     db.session.commit()
     print(new_model.title)
-    # return {cls.__name__.lower(): new_model.to_dict()}, 201
-    return {"task": new_model.to_dict()}, 201
+    return {cls.__name__.lower(): new_model.to_dict()}, 201
+    # return {"task": new_model.to_dict()}, 201
     # return new_model.to_dict(), 201
 
 
