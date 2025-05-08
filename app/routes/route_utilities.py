@@ -63,3 +63,10 @@ def update_model(model, model_data):
     
     db.session.commit()
     return Response(status=204, mimetype="application/json")
+
+
+def delete_model(model):
+    db.session.delete(model)
+    db.session.commit()
+
+    return Response(status=204, mimetype="application/json")

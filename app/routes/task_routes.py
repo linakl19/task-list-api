@@ -3,7 +3,7 @@ import os
 import requests # HTTP library to make a request to Slack API
 from flask import Blueprint, Response, request
 from app.models.task import Task
-from app.routes.route_utilities import  validate_model, get_models_with_filters, create_model, update_model
+from app.routes.route_utilities import  validate_model, get_models_with_filters, create_model, update_model, delete_model
 from ..db import db
 
 
@@ -44,10 +44,11 @@ def update_task(task_id):
 @bp.delete("/<task_id>")
 def delete_task(task_id):
     task = validate_model(Task, task_id)
-    db.session.delete(task)
-    db.session.commit()
+    # db.session.delete(task)
+    # db.session.commit()
 
-    return Response(status=204, mimetype="application/json")
+    # return Response(status=204, mimetype="application/json")
+    return delete_model(task)
 
 
 @bp.patch("/<task_id>/mark_complete")
