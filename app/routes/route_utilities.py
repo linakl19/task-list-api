@@ -1,4 +1,4 @@
-from flask import abort, make_response
+from flask import abort, make_response, Response
 from ..db import db
 
 def validate_model(cls, model_id):
@@ -55,3 +55,11 @@ def get_models_with_filters(cls, filters=None):
 
     models = db.session.scalars(query)
     return [model.to_dict() for model in models]
+
+
+def update_model(model, model_data):
+    for attribute, value in model_data.items():
+        setattr(model, attribute, value)
+    
+    db.session.commit()
+    return Response(status=204, mimetype="application/json")
