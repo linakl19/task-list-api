@@ -23,8 +23,9 @@ def get_all_tasks():
 
 
 @bp.get("/<task_id>")
-def gets_one_book(task_id):
+def gets_one_task(task_id):
     task = validate_model(Task, task_id)
+
     return {"task": task.to_dict()}
 
 
@@ -32,32 +33,29 @@ def gets_one_book(task_id):
 def update_task(task_id):
     task = validate_model(Task, task_id)
     request_body = request.get_json()
-    # task.title = request_body["title"]
-    # task.description = request_body["description"]
 
-    # db.session.commit()
-
-    # return Response(status=204, mimetype="application/json")
     return update_model(task, request_body)
 
 
 @bp.delete("/<task_id>")
 def delete_task(task_id):
     task = validate_model(Task, task_id)
-    # db.session.delete(task)
-    # db.session.commit()
-
-    # return Response(status=204, mimetype="application/json")
+    
     return delete_model(task)
 
 
 @bp.patch("/<task_id>/mark_complete")
 def mark_task_complete(task_id):
+    """
+    Marks a task as complete and sends a Slack notification.
+
+    If the task is not already completed, sets the `completed_at` timestamp and posts a message to Slack.
+    Returns a 204 No Content response.
+    """
     task = validate_model(Task, task_id)
     
     path = "https://slack.com/api/chat.postMessage"
     API_KEY = os.environ.get("API_KEY")
-
     headers = {"Authorization": f"Bearer {API_KEY}"}
     body ={
         "channel": "task-notifications",
@@ -69,15 +67,18 @@ def mark_task_complete(task_id):
         slack_post = requests.post(path, headers=headers, json=body )
     
     db.session.commit()
+
     return Response(status=204, mimetype="application/json")
 
 
 @bp.patch("/<task_id>/mark_incomplete")
 def mark_task_incomplete(task_id):
     task = validate_model(Task, task_id)
+
     if task.completed_at:
         task.completed_at = None
     
     db.session.commit()
+
     return Response(status=204, mimetype="application/json")
 

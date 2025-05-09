@@ -41,6 +41,7 @@ def get_models_with_filters(cls, filters=None):
             if attribute == "sort":
                 sort = value
                 continue  
+
             if hasattr(cls, attribute):
                 query = query.where(getattr(cls, attribute).ilike(f"%{value}%"))
     
@@ -87,7 +88,7 @@ def validate_multiple_models(cls, id_list):
     - 400 if any ID is not a valid integer.
     - 404 if one or more IDs are not found in the database.
     """
-
+    
     try:
         id_list = [int(id) for id in id_list]
     except:

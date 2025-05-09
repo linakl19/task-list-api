@@ -25,7 +25,6 @@ class Task(db.Model):
             "description": self.description,
             "title": self.title,
             "is_complete": self.completed_at is not None,
-            # "goal_id": self.goal.id if self.goal_id else None
         }
 
         if self.goal_id:
@@ -38,6 +37,7 @@ class Task(db.Model):
     def from_dict(cls, task_data):
         new_task = cls(title=task_data["title"],
                         description=task_data["description"],
-                        completed_at=task_data.get("completed_at", None)  # This will be None if not provided
+                        completed_at=task_data.get("completed_at", None)
                     )
+        
         return new_task
