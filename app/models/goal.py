@@ -2,6 +2,11 @@ from sqlalchemy.orm import Mapped, mapped_column,relationship
 from ..db import db
 
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from .task import Task
+
+
 class Goal(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     title: Mapped[str]
@@ -12,7 +17,6 @@ class Goal(db.Model):
         goal_dict = {
             "id": self.id,
             "title": self.title,
-            # "tasks": [task.to_dict() for task in self.tasks]
         }
         
         if self.tasks:
